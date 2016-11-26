@@ -1,3 +1,9 @@
+####Where'sMyCar?
+
+Attempt at an app to help locate where you parked in strange and unfamiliar cities.
+
+
+Preliminary list of features:
 
 1. Zoom in to your location on startup -- DONE --
 2. Place a pin at your location
