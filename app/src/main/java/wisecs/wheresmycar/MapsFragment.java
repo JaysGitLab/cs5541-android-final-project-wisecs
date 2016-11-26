@@ -68,6 +68,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
          public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
+            //should check permissions...
             mMap.setMyLocationEnabled(true);
             updateUI();
          }
@@ -150,7 +151,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       });
    }
 
-   /** Need way to separate update user location and marker location
+   /**
     *  Need to somehow NOT be integrated into findLocation
     */
    private void updateUI() {
