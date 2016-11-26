@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -18,7 +20,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -31,6 +32,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
    private GoogleApiClient mClient;
    private GoogleMap mMap;
    private Location mCurrentLocation;
+   //private MenuItem searchItem;
 
    public static MapsFragment newInstance() {
       return new MapsFragment();
@@ -51,6 +53,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
                   getActivity().invalidateOptionsMenu();
 
                   findLocation();
+                  //updateUI();
                }
 
                @Override
@@ -64,6 +67,9 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
          @Override
          public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
+
+            mMap.setMyLocationEnabled(true);
+            updateUI();
          }
       });
 
@@ -84,6 +90,27 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       super.onStop();
 
       mClient.disconnect();
+   }
+
+   @Override
+   public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+      super.onCreateOptionsMenu(menu, inflater);
+      inflater.inflate(R.menu.fragment_maps, menu);
+
+      MenuItem searchItem = menu.findItem(R.id.action_locate);
+      searchItem.setEnabled(mClient.isConnected());
+   }
+
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+      switch(item.getItemId()) {
+         case R.id.action_locate:
+            findLocation();
+            //updateUI();
+            return true;
+         default:
+            return super.onOptionsItemSelected(item);
+      }
    }
 
    /*@Override
@@ -118,11 +145,14 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
          public void onLocationChanged(Location location) {
             Log.i(TAG, "Got a fix: " + location);
             mCurrentLocation = location;
-            updateUI();
+            updateUI();  //NEEDS TO NOT BE HERE, need to sync somehow
          }
       });
    }
 
+   /** Need way to separate update user location and marker location
+    *  Need to somehow NOT be integrated into findLocation
+    */
    private void updateUI() {
       if(mMap == null) {
          Log.i(TAG, "Failed UI update: Map is null");
@@ -137,6 +167,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
 
       MarkerOptions myMarker = new MarkerOptions()
             .position(myPoint);
+      //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
 
       mMap.clear();
       mMap.addMarker(myMarker);
