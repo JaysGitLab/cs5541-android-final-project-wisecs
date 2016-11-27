@@ -70,11 +70,9 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
 
             //should check permissions...
             mMap.setMyLocationEnabled(true);
-            updateUI();
+            //updateUI();
          }
       });
-
-
    }
 
    @Override
@@ -107,7 +105,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       switch(item.getItemId()) {
          case R.id.action_locate:
             findLocation();
-            //updateUI();
+            updateUI();
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -146,7 +144,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
          public void onLocationChanged(Location location) {
             Log.i(TAG, "Got a fix: " + location);
             mCurrentLocation = location;
-            updateUI();  //NEEDS TO NOT BE HERE, need to sync somehow
+            //updateUI();  //NEEDS TO NOT BE HERE, need to sync somehow
          }
       });
    }
@@ -166,19 +164,51 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
 
       LatLng myPoint = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
+      mMap.clear();
+
+      putPin(myPoint);
+      zoomTo(myPoint, 17.0f);
+
+   }
+
+   private void putPin(LatLng coordinates) {
+      if(mMap == null) {
+         Log.i(TAG, "Failed to put pin: Map is null");
+         return;
+      }
+      if(coordinates == null) {
+         Log.i(TAG, "Failed to put pin: Coordinates are null");
+         return;
+      }
+
       MarkerOptions myMarker = new MarkerOptions()
-            .position(myPoint);
+            .position(coordinates);
       //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
 
-      mMap.clear();
       mMap.addMarker(myMarker);
+   }
+
+   private void zoomTo(LatLng coordinates, float depth) {
+      if(mMap == null) {
+         Log.i(TAG, "Failed to zoom: Map is null");
+         return;
+      }
+      if(coordinates == null) {
+         Log.i(TAG, "Failed to zoom: Coordinates are null");
+         return;
+      }
+      if(depth < 2.0f || depth > 22.0f) {
+         Log.i(TAG, "Failed to zoom: out of bounds depth");
+         return;
+      }
 
       /*LatLngBounds bounds = new LatLngBounds.Builder()
             .include(myPoint)
             .build();
 
       int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);*/
-      CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myPoint, 17.0f);
+
+      CameraUpdate update = CameraUpdateFactory.newLatLngZoom(coordinates, depth);
       mMap.animateCamera(update);
    }
 }
