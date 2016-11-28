@@ -99,7 +99,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       MenuItem searchItem = menu.findItem(R.id.action_locate);
       searchItem.setEnabled(mClient.isConnected());
       MenuItem editItem = menu.findItem(R.id.action_edit);
-      //editItem.setEnabled(searchItem.isEnabled());
+      editItem.setEnabled(searchItem.isEnabled());
    }
 
    @Override
@@ -110,7 +110,8 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
             updateUI();
             return true;
          case R.id.action_edit:
-            //edit the things
+            if(mMap != null) mMap.clear();
+            return true;
          default:
             return super.onOptionsItemSelected(item);
       }
