@@ -7,7 +7,7 @@ Preliminary list of features:
 1. Zoom in to your location on startup -- DONE BETTER --
 2. Place a pin at your location -- DONE --
 	
-	2.0 Pin persists through restart
+	2.0 Pin persists through restart --DONE--
 
 3. Placing a pin brings up a dialog with text field for details
 4. Details are saved
