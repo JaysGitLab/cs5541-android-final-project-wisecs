@@ -1,6 +1,8 @@
 package wisecs.wheresmycar;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
    private GoogleApiClient mClient;
    private GoogleMap mMap;
    private Location mCurrentLocation;
+   private Location mCurrentMarker;
    //private MenuItem searchItem;
 
    public static MapsFragment newInstance() {
@@ -43,6 +46,8 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       super.onCreate(savedInstanceState);
       setHasOptionsMenu(true);
 
+
+
       mClient = new GoogleApiClient.Builder(getActivity())
             .addApi(LocationServices.API)
             .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -53,6 +58,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
                   getActivity().invalidateOptionsMenu();
 
                   findLocation();
+                  restorePin();
                   zoomTo(mCurrentLocation, 17.0f);
                }
 
@@ -110,7 +116,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
             updateUI();
             return true;
          case R.id.action_edit:
-            if(mMap != null) mMap.clear();
+            clearPin();
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -167,7 +173,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
          return;
       }
 
-      mMap.clear();
+      clearPin();
       putPin(mCurrentLocation);
       zoomTo(mCurrentLocation, 17.0f);
 
@@ -182,12 +188,57 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
          Log.i(TAG, "Failed to put pin: Location is null");
          return;
       }
-
+      mCurrentMarker = location;
+      savePin();
       LatLng myPoint = new LatLng(location.getLatitude(), location.getLongitude());
       MarkerOptions myMarker = new MarkerOptions()
             .position(myPoint);
       //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
       mMap.addMarker(myMarker);
+   }
+
+   private void clearPin() {
+      if(mMap == null) {
+         Log.i(TAG, "Failed to clear pin: Map is null");
+         return;
+      }
+
+      mMap.clear();
+      mCurrentMarker = null;
+      SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
+      editor.clear();
+      editor.commit();
+   }
+
+   private void savePin() {
+      if(mCurrentMarker ==  null) {
+         Log.i(TAG, "Failed to save pin: Current pin is null");
+      }
+
+      SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
+      editor.putString("latitude", "" + mCurrentMarker.getLatitude());
+      editor.putString("longitude", "" + mCurrentMarker.getLongitude());
+      editor.commit();
+   }
+
+   private void restorePin() {
+      SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+      String lat = sharedPref.getString("latitude", null);
+      String lon = sharedPref.getString("longitude", null);
+      if(lat == null || lon == null) {
+         Log.i(TAG, "Failed to restore pin: No saved pin");
+         return;
+      }
+
+      Double latitude = Double.valueOf(lat);
+      Double longitude = Double.valueOf(lon);
+
+      //Test Code
+      mCurrentLocation = new Location("");
+      mCurrentLocation.setLatitude(latitude);
+      mCurrentLocation.setLongitude(longitude);
+
+      putPin(mCurrentLocation);
    }
 
    private void zoomTo(Location location, float depth) {
