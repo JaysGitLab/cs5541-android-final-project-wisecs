@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Where\'sMyCar?</string>'
     <string name="place">Place Pin</string>
+    <string name="details_title">Details</string>
+    <string name="details_hint">Enter any information that may help you find your car,
+                                like the nearby landmarks or the floor number if parked in a deck.</string>
 </resources>

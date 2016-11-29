@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -28,14 +29,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Created by Carter W on 11/26/2016.
  */
 
-public class MapsFragment extends SupportMapFragment /*implements GoogleApiClient.ConnectionCallbacks*/{
+public class MapsFragment extends SupportMapFragment {
    private static final String TAG = "MapsFragment";
 
    private GoogleApiClient mClient;
    private GoogleMap mMap;
    private Location mCurrentLocation;
    private Location mCurrentMarker;
-   //private MenuItem searchItem;
 
    public static MapsFragment newInstance() {
       return new MapsFragment();
@@ -45,8 +45,6 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setHasOptionsMenu(true);
-
-
 
       mClient = new GoogleApiClient.Builder(getActivity())
             .addApi(LocationServices.API)
@@ -123,19 +121,6 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       }
    }
 
-   /*@Override
-   public void onConnected(Bundle bundle) {
-      Log.i(TAG,"Google Client is Connected");
-
-      updateUI();
-      findLocation();
-   }
-
-   @Override
-   public void onConnectionSuspended(int cause) {
-      Log.i(TAG,"Google Client is Suspended");
-   }*/
-
    private void findLocation() {
       if(!mClient.isConnected()) {
          Log.i(TAG, "Couldn't find location: Client not connected");
@@ -160,9 +145,6 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       });
    }
 
-   /**
-    *  Need to somehow NOT be integrated into findLocation
-    */
    private void updateUI() {
       if(mMap == null) {
          Log.i(TAG, "Failed UI update: Map is null");
@@ -192,8 +174,8 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleApiClien
       savePin();
       LatLng myPoint = new LatLng(location.getLatitude(), location.getLongitude());
       MarkerOptions myMarker = new MarkerOptions()
-            .position(myPoint);
-      //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            .position(myPoint)
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
       mMap.addMarker(myMarker);
    }
 
