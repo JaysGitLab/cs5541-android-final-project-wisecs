@@ -28,6 +28,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by Carter W on 11/26/2016.
+ *
+ * ************************LOOK HERE LOOK HERE GO TO HERE TO FIGURE OUT WHAT YOU WANT*****************************************
+ * http://stackoverflow.com/questions/13904651/android-google-maps-v2-how-to-add-marker-with-multiline-snippet
  */
 
 public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMarkerClickListener {
@@ -75,7 +78,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
 
             //should check permissions...
             mMap.setMyLocationEnabled(true);
-            // mMap.setOnMarkerClickListener(this);
+            //mMap.setOnMarkerClickListener(this); //Can't do this because "this" isn't
          }
       });
    }
@@ -182,6 +185,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       MarkerOptions myMarker = new MarkerOptions()
             .position(myPoint)
             .draggable(true)
+            .title("My Car")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
       mMap.addMarker(myMarker);
    }

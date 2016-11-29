@@ -20,4 +20,4 @@ Preliminary list of features:
 10. Timer automatically discovers time it will run out, notifies 15 minutes before hand
 11. Timer notification time can be adjusted
 
-??. Pin can be dragged and moved?
+??. Pin can be dragged and moved? --DONE--
