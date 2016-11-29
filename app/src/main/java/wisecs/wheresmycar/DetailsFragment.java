@@ -9,6 +9,8 @@ import android.support.v4.app.Fragment;
 
 public class DetailsFragment extends Fragment {
 
+   private Details mDetails;
+
    public static DetailsFragment newInstance() { return new DetailsFragment(); }
 
    public void onCreate(Bundle savedInstanceState) {

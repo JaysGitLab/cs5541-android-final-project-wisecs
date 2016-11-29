@@ -23,13 +23,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by Carter W on 11/26/2016.
  */
 
-public class MapsFragment extends SupportMapFragment {
+public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMarkerClickListener {
    private static final String TAG = "MapsFragment";
 
    private GoogleApiClient mClient;
@@ -74,7 +75,7 @@ public class MapsFragment extends SupportMapFragment {
 
             //should check permissions...
             mMap.setMyLocationEnabled(true);
-            //updateUI();
+            // mMap.setOnMarkerClickListener(this);
          }
       });
    }
@@ -108,7 +109,7 @@ public class MapsFragment extends SupportMapFragment {
 
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
-      switch(item.getItemId()) {
+      switch (item.getItemId()) {
          case R.id.action_locate:
             findLocation();
             updateUI();
@@ -119,6 +120,11 @@ public class MapsFragment extends SupportMapFragment {
          default:
             return super.onOptionsItemSelected(item);
       }
+   }
+
+   @Override
+   public boolean onMarkerClick(Marker marker) {
+      return false;
    }
 
    private void findLocation() {
@@ -175,6 +181,7 @@ public class MapsFragment extends SupportMapFragment {
       LatLng myPoint = new LatLng(location.getLatitude(), location.getLongitude());
       MarkerOptions myMarker = new MarkerOptions()
             .position(myPoint)
+            .draggable(true)
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
       mMap.addMarker(myMarker);
    }
