@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,7 +47,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
    }
 
    @Override
-   public void onCreate(Bundle savedInstanceState) {
+   public void onCreate(final Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setHasOptionsMenu(true);
 
@@ -76,8 +77,15 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
+            if (ActivityCompat.checkSelfPermission(getContext(),
+                  Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+                  Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+               //supposed to request permissions if do not have them
+               return;
+            }
             //should check permissions...
             mMap.setMyLocationEnabled(true);
+            mMap.setInfoWindowAdapter(new DetailsAdapter(getLayoutInflater(savedInstanceState)));
             //mMap.setOnMarkerClickListener(this); //Can't do this because "this" isn't
          }
       });
@@ -140,7 +148,9 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
       request.setNumUpdates(1);
       request.setInterval(0);
-      if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      if (ActivityCompat.checkSelfPermission(this.getContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
          //supposed to request permissions if do not have them
          return;
       }
@@ -186,6 +196,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
             .position(myPoint)
             .draggable(true)
             .title("My Car")
+            .snippet("Test Snippet\nMultiline\nHopefully?")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
       mMap.addMarker(myMarker);
    }
