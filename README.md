@@ -9,9 +9,13 @@ Preliminary list of features:
 	
 	2.0 Pin persists through restart --DONE--
 
-3. Placing a pin brings up a dialog with text field for details
-4. Details are saved
-5. Details can be accessed and read
+	??. Pin can be dragged and moved? --DONE--
+
+3. Placing a pin brings up a dialog with text field for details --Partial--
+4. Details are saved --Working on it--
+5. Details can be accessed and read --Working on it--
+
+?? Plot directions from location to pin
 
 6. 2 types of pins can be chosen
 7. Floor dropdown
@@ -20,4 +24,3 @@ Preliminary list of features:
 10. Timer automatically discovers time it will run out, notifies 15 minutes before hand
 11. Timer notification time can be adjusted
 
-??. Pin can be dragged and moved? --DONE--
