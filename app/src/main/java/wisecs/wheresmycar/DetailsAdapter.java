@@ -27,7 +27,7 @@ public class DetailsAdapter implements InfoWindowAdapter {
 
    @Override
    public View getInfoContents(Marker marker) {
-      if(mPopup==null) { mPopup=mInflater.inflate(R.layout.adapter_popup, null); }
+      if(mPopup==null) { mPopup=mInflater.inflate(R.layout.adapter_details, null); }
 
       //TextView textView=(TextView)mPopup.findViewById(R.id.title);
       //textView.setText(marker.getTitle());
