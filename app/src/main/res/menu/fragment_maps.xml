@@ -5,7 +5,7 @@
           android:title="Edit Pin"
           android:enabled="false"
           app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_locate"
+    <item android:id="@+id/action_place"
           android:title="@string/place"
           android:enabled="false"
           app:showAsAction="ifRoom"/>

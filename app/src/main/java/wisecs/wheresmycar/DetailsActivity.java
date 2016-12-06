@@ -28,4 +28,5 @@ public class DetailsActivity extends SingleFragmentActivity {
 
       return DetailsFragment.newInstance(marker);
    }
+
 }

@@ -1,5 +1,6 @@
 package wisecs.wheresmycar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -58,12 +59,12 @@ public class DetailsFragment extends Fragment {
       mButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(final View view) {
-
             if(mDetailsText.getText() != null) {
                mMarker.snippet(mDetailsText.getText().toString());
             }
 
-            Intent intent = MapsActivity.newIntent(getActivity(), mMarker);
+            Intent resultIntent = MapsActivity.newIntent(getActivity(), mMarker);
+            getActivity().setResult(Activity.RESULT_OK, resultIntent);
 
             getActivity().finish();
          }

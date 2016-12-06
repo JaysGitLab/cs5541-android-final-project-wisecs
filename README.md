@@ -7,13 +7,13 @@ Preliminary list of features:
 1. Zoom in to your location on startup -- DONE BETTER --
 2. Place a pin at your location -- DONE --
 	
-	2.0 Pin persists through restart --DONE--
+	2.0 Pin persists through restart --DOESN'T WORK AFTER EDITING PIN[M RO--
 
-	??. Pin can be dragged and moved? --DONE--
+	??. Pin can be dragged and moved? --DOESN'T WORK AFTER EDITING PIN--
 
-3. Placing a pin brings up a dialog with text field for details --Partial--
-4. Details are saved --Working on it--
-5. Details can be accessed and read --Working on it--
+3. Placing a pin brings up a dialog with text field for details --DONE--
+4. Details are saved --DONE--
+5. Details can be accessed and read --DONE--
 
 ?? Plot directions from location to pin --OPENS GOODLE MAPS--
 

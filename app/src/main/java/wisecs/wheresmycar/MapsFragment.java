@@ -1,6 +1,7 @@
 package wisecs.wheresmycar;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,9 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,11 +37,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMarkerClickListener {
    private static final String TAG = "MapsFragment";
+   private static final int EDIT_REQUEST = 1;
 
    private GoogleApiClient mClient;
    private GoogleMap mMap;
    private LatLng mCurrentLocation;
    private MarkerOptions mCurrentMarker;
+   private MenuItem mPlaceItem;
+   private MenuItem mEditItem;
+
 
    public static MapsFragment newInstance() {
       return new MapsFragment();
@@ -114,16 +117,16 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       super.onCreateOptionsMenu(menu, inflater);
       inflater.inflate(R.menu.fragment_maps, menu);
 
-      MenuItem searchItem = menu.findItem(R.id.action_locate);
-      searchItem.setEnabled(mClient.isConnected());
-      MenuItem editItem = menu.findItem(R.id.action_edit);
-      editItem.setEnabled(searchItem.isEnabled());
+      mPlaceItem = menu.findItem(R.id.action_place);
+      mPlaceItem.setEnabled(mClient.isConnected());
+      mEditItem = menu.findItem(R.id.action_edit);
+      mEditItem.setEnabled(mPlaceItem.isEnabled() && mCurrentMarker != null);
    }
 
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
       switch (item.getItemId()) {
-         case R.id.action_locate:
+         case R.id.action_place:
             findLocation();
             updateUI();
             return true;
@@ -167,6 +170,20 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       });
    }
 
+   @Override
+   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+
+      switch(requestCode) {
+         case EDIT_REQUEST:
+            if(resultCode == Activity.RESULT_OK) {
+               clearPin();
+               mCurrentMarker = data.getParcelableExtra(MapsActivity.EXTRA_MARKER);
+               mMap.addMarker(mCurrentMarker);
+            }
+      }
+   }
+
    private void updateUI() {
       if(mMap == null) {
          Log.i(TAG, "Failed UI update: Map is null");
@@ -192,14 +209,15 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          Log.i(TAG, "Failed to put pin: Location is null");
          return;
       }
-      savePin();
       mCurrentMarker = new MarkerOptions()
             .position(location)
             .draggable(true)
             .title("My Car")
-            .snippet("Test Snippet\nMultiline\nHopefully?")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
       mMap.addMarker(mCurrentMarker);
+      savePin();
+      
+      mEditItem.setEnabled(mPlaceItem.isEnabled());
    }
 
    private void clearPin() {
@@ -217,17 +235,17 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
 
    public void editPin() {
       Intent intent = DetailsActivity.newIntent(getActivity(), mCurrentMarker);
-      startActivity(intent);
+      startActivityForResult(intent, EDIT_REQUEST);
    }
 
    private void savePin() {
-      if(mCurrentLocation ==  null) {
+      if(mCurrentMarker ==  null) {
          Log.i(TAG, "Failed to save pin: Current pin is null");
       }
 
       SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
-      editor.putString("latitude", "" + mCurrentLocation.latitude);
-      editor.putString("longitude", "" + mCurrentLocation.longitude);
+      editor.putString("latitude", "" + mCurrentMarker.getPosition().latitude);
+      editor.putString("longitude", "" + mCurrentMarker.getPosition().longitude);
       editor.commit();
    }
 
