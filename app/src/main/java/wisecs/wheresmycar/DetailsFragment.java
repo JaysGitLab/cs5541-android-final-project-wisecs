@@ -48,8 +48,8 @@ public class DetailsFragment extends Fragment {
       View v = inflater.inflate(R.layout.fragment_details, container, false);
 
       mTitle = (TextView) v.findViewById(R.id.details_title);
-      if(mMarker.getTitle() != null)
-         mTitle.setText(mMarker.getTitle());
+      //if(mMarker.getTitle() != null)
+      //    mTitle.setText(mMarker.getTitle());
 
       mDetailsText = (EditText) v.findViewById(R.id.details_input);
       if(mMarker.getSnippet() != null)

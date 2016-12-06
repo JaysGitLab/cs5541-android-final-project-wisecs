@@ -67,6 +67,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
 
                   findLocation();
                   restorePin();
+                  putPin(mCurrentMarker);
                   zoomTo(mCurrentLocation, 17.0f);
                }
 
@@ -128,7 +129,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       switch (item.getItemId()) {
          case R.id.action_place:
             findLocation();
-            updateUI();
+            putPin(mCurrentLocation);
             return true;
          case R.id.action_edit:
             //clearPin();
@@ -177,9 +178,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       switch(requestCode) {
          case EDIT_REQUEST:
             if(resultCode == Activity.RESULT_OK) {
-               clearPin();
-               mCurrentMarker = data.getParcelableExtra(MapsActivity.EXTRA_MARKER);
-               mMap.addMarker(mCurrentMarker);
+               putPin((MarkerOptions) data.getParcelableExtra(MapsActivity.EXTRA_MARKER));
             }
       }
    }
@@ -194,12 +193,13 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          return;
       }
 
-      clearPin();
+
       putPin(mCurrentLocation);
       zoomTo(mCurrentLocation, 17.0f);
 
    }
 
+   /* creates generic new pin */
    private void putPin(LatLng location) {
       if(mMap == null) {
          Log.i(TAG, "Failed to put pin: Map is null");
@@ -209,6 +209,8 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          Log.i(TAG, "Failed to put pin: Location is null");
          return;
       }
+      clearPin();
+
       mCurrentMarker = new MarkerOptions()
             .position(location)
             .draggable(true)
@@ -218,6 +220,25 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       savePin();
       
       mEditItem.setEnabled(mPlaceItem.isEnabled());
+   }
+
+   /* creates pin with the attributes of marker */
+   private void putPin(MarkerOptions marker) {
+      if(mMap == null) {
+         Log.i(TAG, "Failed to put pin: Map is null");
+         return;
+      }
+      if(marker.getPosition() == null) {
+         Log.i(TAG, "Failed to put pin: Location is null");
+         return;
+      }
+      clearPin();
+
+      mCurrentMarker = marker;
+      mMap.addMarker(mCurrentMarker);
+      savePin();
+
+      //mEditItem.setEnabled(mPlaceItem.isEnabled());
    }
 
    private void clearPin() {
@@ -233,7 +254,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       editor.commit();
    }
 
-   public void editPin() {
+   private void editPin() {
       Intent intent = DetailsActivity.newIntent(getActivity(), mCurrentMarker);
       startActivityForResult(intent, EDIT_REQUEST);
    }
@@ -246,6 +267,8 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
       editor.putString("latitude", "" + mCurrentMarker.getPosition().latitude);
       editor.putString("longitude", "" + mCurrentMarker.getPosition().longitude);
+      editor.putString("title", "" + mCurrentMarker.getTitle());
+      editor.putString("snippet", "" + mCurrentMarker.getSnippet());
       editor.commit();
    }
 
@@ -261,10 +284,16 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       Double latitude = Double.valueOf(lat);
       Double longitude = Double.valueOf(lon);
 
-      //Test Code
-      mCurrentLocation = new LatLng(latitude, longitude);
+      LatLng location = new LatLng(latitude, longitude);
+      String title = sharedPref.getString("title", null);
+      String snippet = sharedPref.getString("snippet", "");
 
-      putPin(mCurrentLocation);
+      mCurrentMarker = new MarkerOptions()
+            .position(location)
+            .draggable(true)
+            .title(title)
+            .snippet(snippet)
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));;
    }
 
    private void zoomTo(LatLng location, float depth) {
