@@ -41,8 +41,8 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
 
    private GoogleApiClient mClient;
    private GoogleMap mMap;
-   private Location mCurrentLocation;
-   private Location mCurrentMarker;
+   private LatLng mCurrentLocation;
+   private MarkerOptions mCurrentMarker;
 
    public static MapsFragment newInstance() {
       return new MapsFragment();
@@ -88,7 +88,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
             //should check permissions...
             mMap.setMyLocationEnabled(true);
             mMap.setInfoWindowAdapter(new DetailsAdapter(getLayoutInflater(savedInstanceState)));
-            //mMap.setOnMarkerClickListener(MapsFragment.this); //Can't do this because "this" isn't
+            //mMap.setOnMarkerClickListener(MapsFragment.this);
          }
       });
    }
@@ -142,7 +142,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
    }
 
    public void editPin() {
-      Intent intent = new Intent(getActivity(), DetailsActivity.class);
+      Intent intent = DetailsActivity.newIntent(getActivity(), mCurrentMarker);
       startActivity(intent);
    }
 
@@ -166,7 +166,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          @Override
          public void onLocationChanged(Location location) {
             Log.i(TAG, "Got a fix: " + location);
-            mCurrentLocation = location;
+            mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             zoomTo(mCurrentLocation, 17.0f);  //NEEDS TO NOT BE HERE, need to sync somehow
          }
       });
@@ -188,7 +188,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
 
    }
 
-   private void putPin(Location location) {
+   private void putPin(LatLng location) {
       if(mMap == null) {
          Log.i(TAG, "Failed to put pin: Map is null");
          return;
@@ -197,16 +197,14 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          Log.i(TAG, "Failed to put pin: Location is null");
          return;
       }
-      mCurrentMarker = location;
       savePin();
-      LatLng myPoint = new LatLng(location.getLatitude(), location.getLongitude());
-      MarkerOptions myMarker = new MarkerOptions()
-            .position(myPoint)
+      mCurrentMarker = new MarkerOptions()
+            .position(location)
             .draggable(true)
             .title("My Car")
             .snippet("Test Snippet\nMultiline\nHopefully?")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-      mMap.addMarker(myMarker);
+      mMap.addMarker(mCurrentMarker);
    }
 
    private void clearPin() {
@@ -223,13 +221,13 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
    }
 
    private void savePin() {
-      if(mCurrentMarker ==  null) {
+      if(mCurrentLocation ==  null) {
          Log.i(TAG, "Failed to save pin: Current pin is null");
       }
 
       SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
-      editor.putString("latitude", "" + mCurrentMarker.getLatitude());
-      editor.putString("longitude", "" + mCurrentMarker.getLongitude());
+      editor.putString("latitude", "" + mCurrentLocation.latitude);
+      editor.putString("longitude", "" + mCurrentLocation.longitude);
       editor.commit();
    }
 
@@ -246,14 +244,12 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       Double longitude = Double.valueOf(lon);
 
       //Test Code
-      mCurrentLocation = new Location("");
-      mCurrentLocation.setLatitude(latitude);
-      mCurrentLocation.setLongitude(longitude);
+      mCurrentLocation = new LatLng(latitude, longitude);
 
       putPin(mCurrentLocation);
    }
 
-   private void zoomTo(Location location, float depth) {
+   private void zoomTo(LatLng location, float depth) {
       if(mMap == null) {
          Log.i(TAG, "Failed to zoom: Map is null");
          return;
@@ -267,13 +263,12 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          return;
       }
 
-      LatLng myPoint = new LatLng(location.getLatitude(), location.getLongitude());
       /*LatLngBounds bounds = new LatLngBounds.Builder()
             .include(myPoint)
             .build();
 
       int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);*/
-      CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myPoint, depth);
+      CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, depth);
       mMap.animateCamera(update);
    }
 }

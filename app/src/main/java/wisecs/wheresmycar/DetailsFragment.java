@@ -1,11 +1,8 @@
 package wisecs.wheresmycar;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewGroupCompat;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -24,12 +19,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 
 public class DetailsFragment extends Fragment {
-   private static final String ARG_OPTIONS_ID = "options_id";
 
    private TextView mTitle;
    private EditText mDetailsText;
    private Button mButton;
-   private MarkerOptions marker;
+   private MarkerOptions mMarker;
 
 
    public static DetailsFragment newInstance() {
@@ -44,28 +38,32 @@ public class DetailsFragment extends Fragment {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      marker = (MarkerOptions) getArguments().getParcelable(ARG_OPTIONS_ID);
-      //set things maybe?
+      Intent intent = getActivity().getIntent();
+      mMarker = (MarkerOptions) intent.getParcelableExtra(DetailsActivity.EXTRA_MARKER);
    }
 
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
       View v = inflater.inflate(R.layout.fragment_details, container, false);
 
       mTitle = (TextView) v.findViewById(R.id.details_title);
+      if(mMarker.getTitle() != null)
+         mTitle.setText(mMarker.getTitle());
 
       mDetailsText = (EditText) v.findViewById(R.id.details_input);
+      if(mMarker.getSnippet() != null)
+         mDetailsText.setText(mMarker.getSnippet());
 
       mButton = (Button) v.findViewById(R.id.details_save);
       mButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(final View view) {
 
-            /*if(mDetailsText.getText() != null) {
-               marker.snippet(mDetailsText.getText().toString());
+            if(mDetailsText.getText() != null) {
+               mMarker.snippet(mDetailsText.getText().toString());
             }
 
             Intent resultIntent = new Intent();
-            resultIntent.putExtra(ARG_OPTIONS_ID, marker);
+            resultIntent.putExtra(ARG_OPTIONS_ID, mMarker);
             getActivity().setResult(Activity.RESULT_OK, resultIntent);*/
             getActivity().finish();
          }
