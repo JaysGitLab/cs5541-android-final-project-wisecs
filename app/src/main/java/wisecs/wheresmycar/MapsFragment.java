@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * http://stackoverflow.com/questions/13904651/android-google-maps-v2-how-to-add-marker-with-multiline-snippet
  */
 
-public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMarkerClickListener {
+public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMarkerDragListener*/{
    private static final String TAG = "MapsFragment";
    private static final int EDIT_REQUEST = 1;
 
@@ -92,7 +92,17 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
             //should check permissions...
             mMap.setMyLocationEnabled(true);
             mMap.setInfoWindowAdapter(new DetailsAdapter(getLayoutInflater(savedInstanceState)));
-            //mMap.setOnMarkerClickListener(MapsFragment.this);
+            mMap.setOnMarkerDragListener( new GoogleMap.OnMarkerDragListener() {
+               @Override
+               public void onMarkerDragEnd(Marker marker) {
+                  mCurrentMarker.position(marker.getPosition());
+               }
+
+               @Override
+               public void onMarkerDragStart(Marker marker) {}
+               @Override
+               public void onMarkerDrag(Marker marker) {}
+            });
          }
       });
    }
@@ -102,7 +112,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       super.onStart();
 
       getActivity().invalidateOptionsMenu();
-
+      restorePin();
       mClient.connect();
    }
 
@@ -110,6 +120,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
    public void onStop() {
       super.onStop();
 
+      savePin();
       mClient.disconnect();
    }
 
@@ -140,10 +151,16 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       }
    }
 
+   /*@Override
+   public void onMarkerDragStart(Marker marker) {}
+
    @Override
-   public boolean onMarkerClick(Marker marker) {
-      return false;
-   }
+   public void onMarkerDrag(Marker marker) {}
+
+   @Override
+   public void onMarkerDragEnd(Marker marker) {
+      mCurrentMarker.position(marker.getPosition());
+   }*/
 
    private void findLocation() {
       if(!mClient.isConnected()) {
@@ -183,7 +200,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       }
    }
 
-   private void updateUI() {
+   /*private void updateUI() {
       if(mMap == null) {
          Log.i(TAG, "Failed UI update: Map is null");
          return;
@@ -197,7 +214,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       putPin(mCurrentLocation);
       zoomTo(mCurrentLocation, 17.0f);
 
-   }
+   }*/
 
    /* creates generic new pin */
    private void putPin(LatLng location) {
@@ -228,7 +245,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
          Log.i(TAG, "Failed to put pin: Map is null");
          return;
       }
-      if(marker.getPosition() == null) {
+      if(marker == null) {
          Log.i(TAG, "Failed to put pin: Location is null");
          return;
       }
