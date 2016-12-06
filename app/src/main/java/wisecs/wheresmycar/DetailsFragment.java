@@ -19,6 +19,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by Carter W on 12/1/2016.
+ *
+ * http://stackoverflow.com/questions/38092559/activity-to-allow-users-to-create-and-edit-a-marker-on-google-maps
  */
 
 public class DetailsFragment extends Fragment {
@@ -58,13 +60,13 @@ public class DetailsFragment extends Fragment {
          @Override
          public void onClick(final View view) {
 
-            if(mDetailsText.getText() != null) {
+            /*if(mDetailsText.getText() != null) {
                marker.snippet(mDetailsText.getText().toString());
             }
 
             Intent resultIntent = new Intent();
             resultIntent.putExtra(ARG_OPTIONS_ID, marker);
-            getActivity().setResult(Activity.RESULT_OK, resultIntent);
+            getActivity().setResult(Activity.RESULT_OK, resultIntent);*/
             getActivity().finish();
          }
       });

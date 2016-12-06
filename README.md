@@ -15,7 +15,7 @@ Preliminary list of features:
 4. Details are saved --Working on it--
 5. Details can be accessed and read --Working on it--
 
-?? Plot directions from location to pin
+?? Plot directions from location to pin --OPENS GOODLE MAPS--
 
 6. 2 types of pins can be chosen
 7. Floor dropdown
@@ -24,3 +24,13 @@ Preliminary list of features:
 10. Timer automatically discovers time it will run out, notifies 15 minutes before hand
 11. Timer notification time can be adjusted
 
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------
+Bug - sometimes app restores with two pins

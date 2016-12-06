@@ -2,11 +2,13 @@ package wisecs.wheresmycar;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -86,7 +88,7 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
             //should check permissions...
             mMap.setMyLocationEnabled(true);
             mMap.setInfoWindowAdapter(new DetailsAdapter(getLayoutInflater(savedInstanceState)));
-            //mMap.setOnMarkerClickListener(this); //Can't do this because "this" isn't
+            //mMap.setOnMarkerClickListener(MapsFragment.this); //Can't do this because "this" isn't
          }
       });
    }
@@ -126,7 +128,8 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
             updateUI();
             return true;
          case R.id.action_edit:
-            clearPin();
+            //clearPin();
+            editPin();
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -136,6 +139,11 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
    @Override
    public boolean onMarkerClick(Marker marker) {
       return false;
+   }
+
+   public void editPin() {
+      Intent intent = new Intent(getActivity(), DetailsActivity.class);
+      startActivity(intent);
    }
 
    private void findLocation() {
