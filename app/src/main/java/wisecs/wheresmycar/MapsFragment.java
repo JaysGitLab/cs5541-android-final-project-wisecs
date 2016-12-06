@@ -141,11 +141,6 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       return false;
    }
 
-   public void editPin() {
-      Intent intent = DetailsActivity.newIntent(getActivity(), mCurrentMarker);
-      startActivity(intent);
-   }
-
    private void findLocation() {
       if(!mClient.isConnected()) {
          Log.i(TAG, "Couldn't find location: Client not connected");
@@ -218,6 +213,11 @@ public class MapsFragment extends SupportMapFragment implements GoogleMap.OnMark
       SharedPreferences.Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
       editor.clear();
       editor.commit();
+   }
+
+   public void editPin() {
+      Intent intent = DetailsActivity.newIntent(getActivity(), mCurrentMarker);
+      startActivity(intent);
    }
 
    private void savePin() {

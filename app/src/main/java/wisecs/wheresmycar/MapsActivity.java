@@ -1,15 +1,28 @@
 package wisecs.wheresmycar;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends SingleFragmentActivity {
 
    private static final int REQUEST_ERROR = 0;
+
+   public static final String EXTRA_MARKER = "marker_options";
+
+   public static Intent newIntent(Context packageContext, MarkerOptions marker)
+   {
+      Intent intent = new Intent(packageContext, DetailsActivity.class);
+      intent.putExtra(EXTRA_MARKER, marker);
+      return intent;
+   }
 
    @Override
    protected Fragment createFragment() {

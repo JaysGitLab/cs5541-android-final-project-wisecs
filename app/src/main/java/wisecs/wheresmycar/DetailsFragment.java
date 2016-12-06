@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 
 public class DetailsFragment extends Fragment {
+   private static final String ARG_MARKER = "marker_options";
 
    private TextView mTitle;
    private EditText mDetailsText;
@@ -26,8 +27,9 @@ public class DetailsFragment extends Fragment {
    private MarkerOptions mMarker;
 
 
-   public static DetailsFragment newInstance() {
+   public static DetailsFragment newInstance(MarkerOptions marker) {
       Bundle args = new Bundle();
+      args.putParcelable(ARG_MARKER, marker);
 
       DetailsFragment fragment = new DetailsFragment();
       fragment.setArguments(args);
@@ -38,8 +40,7 @@ public class DetailsFragment extends Fragment {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      Intent intent = getActivity().getIntent();
-      mMarker = (MarkerOptions) intent.getParcelableExtra(DetailsActivity.EXTRA_MARKER);
+      mMarker = (MarkerOptions) getArguments().getParcelable(ARG_MARKER);
    }
 
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,9 +63,8 @@ public class DetailsFragment extends Fragment {
                mMarker.snippet(mDetailsText.getText().toString());
             }
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra(ARG_OPTIONS_ID, mMarker);
-            getActivity().setResult(Activity.RESULT_OK, resultIntent);*/
+            Intent intent = MapsActivity.newIntent(getActivity(), mMarker);
+
             getActivity().finish();
          }
       });

@@ -12,17 +12,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 
 public class DetailsActivity extends SingleFragmentActivity {
-   public static final String EXTRA_MARKER = "marker_options";
+   private static final String EXTRA_MARKER = "marker_options";
 
    public static Intent newIntent(Context packageContext, MarkerOptions marker)
    {
       Intent intent = new Intent(packageContext, DetailsActivity.class);
-      intent.putExtra(EXTRA_MARKER, (Parcelable) marker);
+      intent.putExtra(EXTRA_MARKER, marker);
       return intent;
    }
 
+   @Override
    public Fragment createFragment() {
-      //parameter parameter getIntent.getParcelableExtraExtra
-      return DetailsFragment.newInstance();
+      MarkerOptions marker = (MarkerOptions) getIntent()
+            .getParcelableExtra(EXTRA_MARKER);
+
+      return DetailsFragment.newInstance(marker);
    }
 }
