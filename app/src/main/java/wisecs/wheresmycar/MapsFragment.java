@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -150,17 +151,6 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
             return super.onOptionsItemSelected(item);
       }
    }
-
-   /*@Override
-   public void onMarkerDragStart(Marker marker) {}
-
-   @Override
-   public void onMarkerDrag(Marker marker) {}
-
-   @Override
-   public void onMarkerDragEnd(Marker marker) {
-      mCurrentMarker.position(marker.getPosition());
-   }*/
 
    private void findLocation() {
       if(!mClient.isConnected()) {
@@ -326,13 +316,19 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
          Log.i(TAG, "Failed to zoom: out of bounds depth");
          return;
       }
+      CameraUpdate update;
+      LatLngBounds bounds;
+      if(mCurrentMarker == null) {
+         update = CameraUpdateFactory.newLatLngZoom(location, depth);
+      } else {
+         bounds = new LatLngBounds.Builder()
+               .include(location)
+               .include(mCurrentMarker.getPosition())
+               .build();
 
-      /*LatLngBounds bounds = new LatLngBounds.Builder()
-            .include(myPoint)
-            .build();
-
-      int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);*/
-      CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, depth);
+         int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
+         update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
+      }
       mMap.animateCamera(update);
    }
 }
