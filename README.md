@@ -33,4 +33,5 @@ Preliminary list of features:
 
 
 -------------------------------------------------------------------------
-Bug - sometimes app restores with two pins
+Bugs	- sometimes app restores with two pins (hasn't happened in a while?)
+	- If you rotate during in DetailsFragment saving will not work

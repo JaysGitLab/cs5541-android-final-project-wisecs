@@ -293,7 +293,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
 
       LatLng location = new LatLng(latitude, longitude);
       String title = sharedPref.getString("title", null);
-      String snippet = sharedPref.getString("snippet", "");
+      String snippet = sharedPref.getString("snippet", null);
 
       mCurrentMarker = new MarkerOptions()
             .position(location)
