@@ -32,11 +32,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by Carter W on 11/26/2016.
  *
- * ************************LOOK HERE LOOK HERE GO TO HERE TO FIGURE OUT WHAT YOU WANT*****************************************
- * http://stackoverflow.com/questions/13904651/android-google-maps-v2-how-to-add-marker-with-multiline-snippet
+ * The main Controller for the Where'sMyCar? app.
+ *
+ * Handles map, location, and marker data
  */
 
-public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMarkerDragListener*/{
+public class MapsFragment extends SupportMapFragment {
    private static final String TAG = "MapsFragment";
    private static final int EDIT_REQUEST = 1;
 
@@ -47,16 +48,27 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
    private MenuItem mPlaceItem;
    private MenuItem mEditItem;
 
-
+   /**
+    * @return Returns a new instance of MapsFragment
+    */
    public static MapsFragment newInstance() {
       return new MapsFragment();
    }
 
+   /**
+    * Enables the option menu, connects the GoogleApiClient, and gets the GoogleMap
+    */
    @Override
    public void onCreate(final Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setHasOptionsMenu(true);
 
+      /**
+       * Connects to the Google Api
+       * Once the client is connected the current location will be found,
+       *    any saved Marker attributes will be restored and a Marker will
+       *    be placed onto the map and zoomed to.
+       */
       mClient = new GoogleApiClient.Builder(getActivity())
             .addApi(LocationServices.API)
             .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -79,6 +91,12 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
             })
             .build();
 
+      /**
+       * Gets a Google Map
+       * Enables the device's location to be displayed.
+       * Makes it so that tapping a Marker will display a DetailsFragment.
+       * Updates the current Marker's position when it has been dragged.
+       */
       getMapAsync(new OnMapReadyCallback() {
          @Override
          public void onMapReady(GoogleMap googleMap) {
@@ -87,7 +105,7 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
             if (ActivityCompat.checkSelfPermission(getContext(),
                   Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
                   Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-               //supposed to request permissions if do not have them
+               //supposed to request permissions if do not have them...
                return;
             }
             //should check permissions...
@@ -108,6 +126,10 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       });
    }
 
+   /**
+    * Will restore any saved Marker attributes.
+    * Tells the GoogleApiClient to connect.
+    */
    @Override
    public void onStart() {
       super.onStart();
@@ -117,6 +139,10 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       mClient.connect();
    }
 
+   /**
+    * Saves any current Marker attributes.
+    * Disconnects the GoogleApiClient.
+    */
    @Override
    public void onStop() {
       super.onStop();
@@ -125,6 +151,10 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       mClient.disconnect();
    }
 
+   /**
+    * Inflates this Activity's menu with two buttons.
+    * The "Edit Pin" button will only be enabled if there is a Marker placed.
+    */
    @Override
    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
       super.onCreateOptionsMenu(menu, inflater);
@@ -136,6 +166,11 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       mEditItem.setEnabled(mPlaceItem.isEnabled() && mCurrentMarker != null);
    }
 
+   /**
+    * Responds to presses of the "Place Pin" and "Edit Pin" buttons.
+    * Place Pin places a new pin at the current location.
+    * Edit Pin will start a new DetailsActivity
+    */
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
       switch (item.getItemId()) {
@@ -144,7 +179,6 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
             putPin(mCurrentLocation);
             return true;
          case R.id.action_edit:
-            //clearPin();
             editPin();
             return true;
          default:
@@ -152,6 +186,33 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       }
    }
 
+   /**
+    * Retrieves the Marker attributes from a DetailsActivity
+    *    and places a Marker with those attributes
+    * Will do nothing if DetailsActivity did not close with RESULT_OK
+    *
+    * @param requestCode Should be EDIT_REQUEST
+    * @param resultCode Should be RESULT_OK
+    * @param data Should include a Parcelable Extra of class MarkerOptions
+    */
+   @Override
+   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+
+      switch(requestCode) {
+         case EDIT_REQUEST:
+            if(resultCode == Activity.RESULT_OK) {
+               putPin((MarkerOptions) data.getParcelableExtra(MapsActivity.EXTRA_MARKER));
+            }
+      }
+   }
+
+   /**
+    * Finds the location of this device with high accuracy.
+    * Will fail if ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION have not been granted.
+    * Updates mCurrentLocation
+    * Zooms to the found location to a depth of 17.0
+    */
    private void findLocation() {
       if(!mClient.isConnected()) {
          Log.i(TAG, "Couldn't find location: Client not connected");
@@ -173,40 +234,21 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
          public void onLocationChanged(Location location) {
             Log.i(TAG, "Got a fix: " + location);
             mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            zoomTo(mCurrentLocation, 17.0f);  //NEEDS TO NOT BE HERE, need to sync somehow
+            zoomTo(mCurrentLocation, 17.0f);  //Probably shouldn't be here, need to sync somehow
          }
       });
    }
 
-   @Override
-   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-      super.onActivityResult(requestCode, resultCode, data);
-
-      switch(requestCode) {
-         case EDIT_REQUEST:
-            if(resultCode == Activity.RESULT_OK) {
-               putPin((MarkerOptions) data.getParcelableExtra(MapsActivity.EXTRA_MARKER));
-            }
-      }
-   }
-
-   /*private void updateUI() {
-      if(mMap == null) {
-         Log.i(TAG, "Failed UI update: Map is null");
-         return;
-      }
-      if(mCurrentLocation == null) {
-         Log.i(TAG, "Failed UI update: Location is null");
-         return;
-      }
-
-
-      putPin(mCurrentLocation);
-      zoomTo(mCurrentLocation, 17.0f);
-
-   }*/
-
-   /* creates generic new pin */
+   /**
+    * Places a Marker at the location of the parameter.
+    * The Marker will have the title "My Car"
+    * Removes any previous marker that was on the map and
+    *    updates the current Marker to the new Marker.
+    * Saves the new Marker's attributes.
+    * Enables the "Edit Marker" option button.
+    *
+    * @param location The location to place the new Marker
+    */
    private void putPin(LatLng location) {
       if(mMap == null) {
          Log.i(TAG, "Failed to put pin: Map is null");
@@ -229,7 +271,14 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       mEditItem.setEnabled(mPlaceItem.isEnabled());
    }
 
-   /* creates pin with the attributes of marker */
+   /**
+    * Places a Marker at the location of the parameter.
+    * Removes any previous marker that was on the map and
+    *    updates the current Marker to the new Marker.
+    * Saves the new Marker's attributes.
+    *
+    * @param marker The attributes of the new Marker to place
+    */
    private void putPin(MarkerOptions marker) {
       if(mMap == null) {
          Log.i(TAG, "Failed to put pin: Map is null");
@@ -244,10 +293,12 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       mCurrentMarker = marker;
       mMap.addMarker(mCurrentMarker);
       savePin();
-
-      //mEditItem.setEnabled(mPlaceItem.isEnabled());
    }
 
+   /**
+    * Removes any marker from the map, sets the current Marker to null,
+    *    and clears saved Marker attributes.
+    */
    private void clearPin() {
       if(mMap == null) {
          Log.i(TAG, "Failed to clear pin: Map is null");
@@ -261,11 +312,19 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       editor.commit();
    }
 
+   /**
+    * Starts a DetailsActivity, providing it with the current Marker's location, title, and details
+    * The activity is started expecting it to provide the information about a Marker when the
+    *    activity ends.
+    */
    private void editPin() {
       Intent intent = DetailsActivity.newIntent(getActivity(), mCurrentMarker);
       startActivityForResult(intent, EDIT_REQUEST);
    }
 
+   /**
+    * Saves the location, title, and description of the current Marker, if there is one.
+    */
    private void savePin() {
       if(mCurrentMarker ==  null) {
          Log.i(TAG, "Failed to save pin: Current pin is null");
@@ -279,6 +338,10 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       editor.commit();
    }
 
+   /**
+    * Pulls the location, title, and description of a saved Marker if there is one.
+    * Updates currentMarker to a Marker with the attributes of the saved Marker.
+    */
    private void restorePin() {
       SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
       String lat = sharedPref.getString("latitude", null);
@@ -303,6 +366,14 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));;
    }
 
+   /**
+    * Zooms the map in or out.
+    * If there is a current Marker it will zoom to show the given location and the marker
+    * If there is no current Marker it will zoom to the given location at the given depth
+    *
+    * @param location The location to be able to view after the zoom
+    * @param depth The depth to zoom to if there is no Marker
+    */
    private void zoomTo(LatLng location, float depth) {
       if(mMap == null) {
          Log.i(TAG, "Failed to zoom: Map is null");
@@ -331,4 +402,25 @@ public class MapsFragment extends SupportMapFragment /*implements GoogleMap.OnMa
       }
       mMap.animateCamera(update);
    }
+
+   /**
+    * Was originally used to clear a pin, put a pin, and zoom to the location
+    * Upon completing DetailsActivity it no longer worked
+    * An encapsulating method like this could have some place in this Activity if done properly
+    */
+   /*private void updateUI() {
+      if(mMap == null) {
+         Log.i(TAG, "Failed UI update: Map is null");
+         return;
+      }
+      if(mCurrentLocation == null) {
+         Log.i(TAG, "Failed UI update: Location is null");
+         return;
+      }
+
+
+      putPin(mCurrentLocation);
+      zoomTo(mCurrentLocation, 17.0f);
+
+   }*/
 }

@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by Carter W on 12/1/2016.
  *
- * http://stackoverflow.com/questions/38092559/activity-to-allow-users-to-create-and-edit-a-marker-on-google-maps
+ * Handles the editing of a Marker's description
  */
 
 public class DetailsFragment extends Fragment {
@@ -27,7 +27,12 @@ public class DetailsFragment extends Fragment {
    private Button mButton;
    private MarkerOptions mMarker;
 
-
+   /**
+    * Returns a new instance of DetailsFragment, ensuring that an MarkerOptions
+    *    object is being passed between the calling Activity and this one.
+    * @param marker The MarkerOptions instance to edit
+    * @return Returns a new instance of DetailsFragment
+    */
    public static DetailsFragment newInstance(MarkerOptions marker) {
       Bundle args = new Bundle();
       args.putParcelable(ARG_MARKER, marker);
@@ -38,6 +43,11 @@ public class DetailsFragment extends Fragment {
       return fragment;
    }
 
+   /**
+    * Inflates the view and handles the editing of the provided MarkerOptions' description
+    * When the "Save Details" button is pressed, the edited MarkerOptions will be passed
+    *    back to the calling Activity and this Activity will close.
+    */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);

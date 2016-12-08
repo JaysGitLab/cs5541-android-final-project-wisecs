@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by Carter W on 12/1/2016.
+ *
  */
 
 public class DetailsActivity extends SingleFragmentActivity {

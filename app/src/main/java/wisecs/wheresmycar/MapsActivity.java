@@ -11,6 +11,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+/**
+ * Created by Carter W on 11/26/2016.
+ *
+ */
+
 public class MapsActivity extends SingleFragmentActivity {
 
    private static final int REQUEST_ERROR = 0;

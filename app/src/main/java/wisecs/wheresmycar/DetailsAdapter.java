@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.Marker;
 
 /**
  * Created by Carter W on 12/1/2016.
+ *
+ * Changes the behavior of tapping a Marker to display a multi-line snippet
  */
 
 

@@ -7,6 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by Carter W on 9/20/2016.
+ *
+ * For use with an activity that will only contain one Fragment.
+ * Takes care of the Fragment Manager for this Activity
  */
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
